@@ -1,83 +1,60 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-type User struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+type Customer struct {
+	ID             uint   `gorm:"primaryKey"`
+	Name           string `gorm:"size:255"`
+	PhNum1         string `gorm:"size:20"`
+	PhNum2         string `gorm:"size:20"`
+	Company        string `gorm:"size:255"`
+	Address        string `gorm:"size:500"`
+	RetailCustomer bool   `gorm:"default:false"`
+	MarketplaceID  uint
 }
 
-var users = []User{
-	{ID: "1", Name: "John Doe", Email: "john@example.com"},
-	{ID: "2", Name: "Jane Doe", Email: "jane@example.com"},
+var db *gorm.DB
+
+func initDB() {
+	err := godotenv.Load()
+	dsn := "host=" + os.Getenv("DB_HOST") +
+		" user=" + os.Getenv("DB_USER") +
+		" dbname=" + os.Getenv("DB_NAME") +
+		" port=" + os.Getenv("DB_PORT") +
+		" sslmode=" + os.Getenv("DB_SSLMODE")
+
+	fmt.Println(dsn)
+
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		log.Fatal("Failed to connect to database: ", err)
+	}
+
+	// db.AutoMigrate(&User{})
+	log.Println("Connected to the database")
 }
 
 func getUsers(c *gin.Context) {
+	var users []Customer
+	db.Find(&users)
 	c.JSON(http.StatusOK, users)
 }
 
-func getUserByID(c *gin.Context) {
-	id := c.Param("id")
-	for _, user := range users {
-		if user.ID == id {
-			c.JSON(http.StatusOK, user)
-			return
-		}
-	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
-}
-
-func createUser(c *gin.Context) {
-	var newUser User
-	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	users = append(users, newUser)
-	c.JSON(http.StatusCreated, newUser)
-}
-
-func updateUser(c *gin.Context) {
-	id := c.Param("id")
-	var updatedUser User
-	if err := c.BindJSON(&updatedUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	for i, user := range users {
-		if user.ID == id {
-			users[i] = updatedUser
-			c.JSON(http.StatusOK, updatedUser)
-			return
-		}
-	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
-}
-
-func deleteUser(c *gin.Context) {
-	id := c.Param("id")
-	for i, user := range users {
-		if user.ID == id {
-			users = append(users[:i], users[i+1:]...)
-			c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
-			return
-		}
-	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
-}
-
 func main() {
+	initDB()
 	r := gin.Default()
 	r.GET("/users", getUsers)
-	r.GET("/users/:id", getUserByID)
-	r.POST("/users", createUser)
-	r.PUT("/users/:id", updateUser)
-	r.DELETE("/users/:id", deleteUser)
 
 	r.Run(":8080")
 }
