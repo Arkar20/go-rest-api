@@ -24,6 +24,5 @@ func (controller *Controller) GetCustomers(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, customers)
+	ctx.JSON(http.StatusOK, ToCustomerDTOArray(customers))
 }
-
