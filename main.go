@@ -11,7 +11,7 @@ func main() {
 	db.InitDB()
 	r := gin.Default()
 
-	customer.RegisterRoutes(r, customer.NewController(db.DB))
+	customer.RegisterRoutes(r, customer.NewController())
 
-	r.Run(":8080")
+	r.Run(":3000")
 }

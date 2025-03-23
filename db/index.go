@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -14,13 +13,12 @@ var DB *gorm.DB
 
 func InitDB() {
 	err := godotenv.Load()
+
 	dsn := "host=" + os.Getenv("DB_HOST") +
 		" user=" + os.Getenv("DB_USER") +
 		" dbname=" + os.Getenv("DB_NAME") +
 		" port=" + os.Getenv("DB_PORT") +
 		" sslmode=" + os.Getenv("DB_SSLMODE")
-
-	fmt.Println(dsn)
 
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 

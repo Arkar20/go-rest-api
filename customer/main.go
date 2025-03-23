@@ -6,5 +6,6 @@ import (
 
 // RegisterRoutes will register all the customer-related routes
 func RegisterRoutes(r *gin.Engine, customerController *Controller) {
-	r.GET("/customers", customerController.GetCustomers)
+	r.GET("/customers", customerController.Index)
+	r.GET("/customers/:id", customerController.Show)
 }
