@@ -12,20 +12,26 @@ import (
 var DB *gorm.DB
 
 func InitDB() {
-	err := godotenv.Load()
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, continuing with environment variables")
+	}
 
-	dsn := "host=" + os.Getenv("DB_HOST") +
-		" user=" + os.Getenv("DB_USER") +
-		" dbname=" + os.Getenv("DB_NAME") +
-		" port=" + os.Getenv("DB_PORT") +
-		" sslmode=" + os.Getenv("DB_SSLMODE")
+	// Get database URL from environment
+	dsn := os.Getenv("DB_URL")
+	if dsn == "" {
+		log.Fatal("DB_URL is not set in environment")
+	}
 
+	// Connect to PostgreSQL database using GORM
+	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		log.Fatal("Failed to connect to database: ", err)
 	}
 
-	// db.AutoMigrate(&User{})
+	// Optional: Run auto migration
+	// DB.AutoMigrate(&User{})
+
 	log.Println("Connected to the database")
 }
