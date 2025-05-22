@@ -13,7 +13,7 @@ func main() {
 
 	r.Use(gin.Recovery())
 
-	r.RegisterRoutes(r, customer.NewController())
+	customer.RegisterRoutes(r, customer.NewController())
 
 	r.Run(":3000")
 }

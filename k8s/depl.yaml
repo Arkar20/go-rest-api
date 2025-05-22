@@ -19,4 +19,5 @@ spec:
         ports:
         - containerPort: 3000
         env:
-        - name: 
+        - name: "DB_URL"
+          value: "host=34.74.253.2 user=admin password=password dbname=suwaddy port=5432 sslmode=disable"

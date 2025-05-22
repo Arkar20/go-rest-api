@@ -28,7 +28,7 @@ func NewController() *Controller {
 func (controller *Controller) Index(ctx *gin.Context) {
 	var customers []Customer
 
-	if err := db.DB.Scopes(helper.Paginate(ctx.Request)).Find(&customers).Error; err != nil {
+	if err := db.DB.Find(&customers).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
