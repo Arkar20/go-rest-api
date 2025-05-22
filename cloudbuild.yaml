@@ -1,16 +1,14 @@
 steps:
 - name: docker
   args: ['build','-t','gcr.io/$PROJECT_ID/mistrm','.']
-- name: push
+- name: "gcr.io/cloud-builders/docker"
   args: ['push','gcr.io/$PROJECT_ID/mistrm']
-- name: deploy
+- name: "gcr.io/cloud-builders/gke-deploy"
   args:
   - run
   - --filename=/k8s/depl.yaml
-  - --image=gcr.io/$PROJECT_ID/mistrm
   - --location=us-east1
   - --cluster=mistrm
-  - --namespace=restapi
 images:
 - 'gcr.io/$PROJECT_ID/mistrm'
 options:
