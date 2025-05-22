@@ -6,7 +6,7 @@ steps:
 - name: "gcr.io/cloud-builders/gke-deploy"
   args:
   - run
-  - --filename=/k8s/depl.yaml
+  - --filename=k8s/depl.yaml
   - --location=us-east1
   - --cluster=mistrm
 images:
