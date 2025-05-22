@@ -18,3 +18,5 @@ spec:
         image: gcr.io/turing-clock-460623-s1/mistrm:latest
         ports:
         - containerPort: 3000
+        env:
+        - name: 

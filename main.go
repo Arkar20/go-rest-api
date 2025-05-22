@@ -1,21 +1,19 @@
 package main
 
 import (
-	"net/http"
+	"restapi/customer"
+	"restapi/db"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// db.InitDB()
-	r := gin.Default()
+	db.InitDB()
+	r := gin.New()
 
-	r.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"success": true,
-			"data":    "restapi working",
-		})
-	})
+	r.Use(gin.Recovery())
+
+	r.RegisterRoutes(r, customer.NewController())
 
 	r.Run(":3000")
 }
