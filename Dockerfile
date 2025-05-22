@@ -1,34 +1,26 @@
+# ---------- Build Stage ----------
+FROM golang as builder
 
-FROM golang AS builder
-
-# Create and change to the app directory.
 WORKDIR /app
 
-# Retrieve application dependencies.
-# This allows the container build to reuse cached dependencies.
-# Expecting to copy go.mod and if present go.sum.
+# Copy Go module files and download dependencies
 COPY go.* ./
 RUN go mod download
 
-# Copy local code to the container image.
+# Copy all source files
 COPY . ./
 
+# Build statically linked binary
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server
 
-# Build the binary.
-RUN go build -v -o server
+# ---------- Final Stage ----------
+FROM scratch
 
-# Use the official Debian slim image for a lean production container.
-# https://hub.docker.com/_/debian
-# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM debian:bookworm-slim
-RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+# Copy binary from builder
+COPY --from=builder /app/server /server
 
-# Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/server /app/server
+# Copy .env if your app strictly requires it at runtime
+COPY --from=builder /app/.env /.env
 
-# Run the web service on container startup.
-CMD ["/app/server"]
-
-# [END cloudrun_helloworld_dockerfile_go]
+# Set binary entrypoint
+ENTRYPOINT ["/server"]
