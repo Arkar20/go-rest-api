@@ -19,8 +19,5 @@ FROM scratch
 # Copy binary from builder
 COPY --from=builder /app/server /server
 
-# Copy .env if your app strictly requires it at runtime
-COPY --from=builder /app/.env /.env
-
 # Set binary entrypoint
 ENTRYPOINT ["/server"]
