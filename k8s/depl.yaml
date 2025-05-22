@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restapi
+  namespace: restapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restapi-app
+  template:
+    metadata:
+      labels:
+        app: restapi-app
+    spec:
+      containers:
+      - name: restapi-app
+        image: gcr.io/turing-clock-460623-s1/mistrm:latest
+        ports:
+        - containerPort: 3000
