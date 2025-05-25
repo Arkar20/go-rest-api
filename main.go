@@ -14,7 +14,10 @@ func main() {
 
 	r.Use(gin.Recovery())
 
-	r.Use(cors.Default())
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8080", "http://frontend.local.com"}
+
+	r.Use(cors.New(config))
 
 	customer.RegisterRoutes(r, customer.NewController())
 
