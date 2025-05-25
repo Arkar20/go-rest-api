@@ -5,6 +5,7 @@ import (
 	"restapi/db"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,6 +13,8 @@ func main() {
 	db.InitDB()
 	r := gin.New()
 
+	r.Use(gzip.Gzip(gzip.BestSpeed))
+	
 	r.Use(gin.Recovery())
 
 	config := cors.DefaultConfig()
